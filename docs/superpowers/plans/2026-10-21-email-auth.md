@@ -9,7 +9,10 @@
 - [x] Pages 高级模式打包；处理 Vite 配置重定向和服务端模块相对导入。
 - [x] 20 项单元测试、16 项认证 HTTP 检查、28 项社区检查、15 项移动授权检查、类型检查和 Pages 构建通过。
 - [x] 浏览器验证注册、登录、退出、游客发布拦截、390px适配；独立审查未发现问题。
-- [ ] 原项目目录同步与 GitHub 源码上传。
+- [x] 原项目目录同步，公开 GitHub 仓库已上传提交 93980b2。
 - [ ] Cloudflare 线上资源配置与部署，等待账号授权；不代用户确认支付订阅。
 
 开发副本：/Users/chen/Desktop/36/commands/deploy-recipe-community。原项目：/Users/chen/Desktop/recipe-community。
+
+## Cloudflare 后台进度
+Wrangler 回调遇到旧 state 干扰，CLI 登录未完成。已切换准备 Pages 的 GitHub 集成部署。需要用户完成 Connect GitHub 的单仓库授权，以及自行确认 R2 开通页面的超额按量计费与条款。已创建 D1 recipe-community-db，ID 87b336fc-3037-47ba-87da-b4cb31906f62，三次迁移在后台执行并写入 d1_migrations。
