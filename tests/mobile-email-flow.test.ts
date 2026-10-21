@@ -1,0 +1,7 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {sqliteD1} from './helpers/sqlite-d1.ts';
+import {EmailAuth} from '../lib/email-auth/service.ts';
+import {issueMobileCode,exchangeMobileCode,mobileUser} from '../lib/email-auth/mobile.ts';
+import {pkceChallenge} from '../lib/mobile-security.ts';
+test('mobile authorization requires a real session and PKCE exchange is single-use',async()=>{const db=sqliteD1();const auth=new EmailAuth(db as never);try{await auth.register({name:'厨师',email:'cook@example.com',password:'a secure password'});const session=await auth.login('cook@example.com','a secure password'),user=(await auth.user(session.token))!;const verifier='a'.repeat(43),challenge=await pkceChallenge(verifier);await assert.rejects(issueMobileCode(db as never,{...user,authVersion:undefined},challenge));const code=await issueMobileCode(db as never,user,challenge);await assert.rejects(exchangeMobileCode(db as never,code,'b'.repeat(43)));const mobile=await exchangeMobileCode(db as never,code,verifier);assert.equal((await mobileUser(db as never,mobile.token))?.userId,user.userId);await assert.rejects(exchangeMobileCode(db as never,code,verifier));const pending=await issueMobileCode(db as never,user,challenge);await db.prepare('UPDATE auth_accounts SET version=version+1 WHERE id=?').bind(user.userId).run();assert.equal(await mobileUser(db as never,mobile.token),null);await assert.rejects(exchangeMobileCode(db as never,pending,verifier));await assert.rejects(issueMobileCode(db as never,user,challenge));}finally{db.close();}});

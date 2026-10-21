@@ -1,0 +1,1 @@
+export function isAllowedAuthPost(request:Request){return request.method==='POST'&&request.headers.get('origin')===new URL(request.url).origin&&request.headers.get('sec-fetch-site')!=='cross-site'&&request.headers.get('content-type')?.split(';')[0]==='application/json'&&Number(request.headers.get('content-length')||0)<=8192;}

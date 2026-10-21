@@ -1,0 +1,15 @@
+const encoder=new TextEncoder();
+export function normalizeEmail(value:unknown){const email=typeof value==='string'?value.trim().toLowerCase():'';if(email.length>254||! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw Error('请输入有效的邮箱地址');return email;}
+export function validatePassword(value:unknown){if(typeof value!=='string'||value.length<12||value.length>128)throw Error('密码需为 12–128 个字符');return value;}
+export function validateCredentials(value:Record<string,unknown>,registration=false){const email=normalizeEmail(value.email),password=validatePassword(value.password);const name=typeof value.name==='string'?value.name.trim():'';if(registration&&(!name||name.length>40))throw Error('昵称需为 1–40 个字符');return {email,password,name};}
+export function safeReturnPath(value:unknown){if(typeof value!=='string'||!value.startsWith('/')||value.startsWith('//')||value.includes('\\'))return '/';try{const url=new URL(value,'https://app.local');if(url.origin!=='https://app.local'||url.pathname.startsWith('/auth/')||url.pathname.startsWith('/api/auth/')||url.pathname.startsWith('/signin-')||url.pathname.startsWith('/signout-'))return '/';return url.pathname+url.search+url.hash;}catch{return '/';}}
+export function randomToken(){return Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,'0')).join('');}
+export async function digest(value:string){return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',encoder.encode(value))),b=>b.toString(16).padStart(2,'0')).join('');}
+// Workerd supports up to 100,000 PBKDF2 iterations. Version the stored format
+// so a later runtime/hasher upgrade can rehash passwords at successful login.
+export async function hashPassword(password:string){validatePassword(password);const salt=crypto.getRandomValues(new Uint8Array(16));return 'pbkdf2-sha256$100000$'+hex(salt)+'$'+await derive(password,salt);}
+function hex(bytes:Uint8Array){return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');}
+async function derive(password:string,salt:Uint8Array<ArrayBuffer>){const key=await crypto.subtle.importKey('raw',encoder.encode(password),'PBKDF2',false,['deriveBits']);return hex(new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:100000},key,256)));}
+export async function verifyPassword(password:string,stored:string){const match=/^pbkdf2-sha256\$100000\$([a-f0-9]{32})\$([a-f0-9]{64})$/.exec(stored);if(!match)return false;const actual=await derive(password,Uint8Array.from(match[1].match(/../g)!,s=>parseInt(s,16)));let diff=0;for(let i=0;i<64;i++)diff|=actual.charCodeAt(i)^match[2].charCodeAt(i);return diff===0;}
+export function readSession(cookie:string|null){const parts=(cookie||'').split(';').map(s=>s.trim()).filter(s=>s.startsWith('shiguang_session='));return parts.length===1&&/^[a-f0-9]{64}$/.test(parts[0].slice(17))?parts[0].slice(17):null;}
+export function sessionCookie(token:string,maxAge=7*86400,secure=true){return `shiguang_session=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure?'; Secure':''}`;}

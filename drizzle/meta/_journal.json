@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1792511065837,
+      "tag": "0000_robust_forge",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792513008394,
+      "tag": "0001_nosy_vindicator",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792560115536,
+      "tag": "0002_email_auth",
+      "breakpoints": true
+    }
+  ]
+}

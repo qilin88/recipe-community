@@ -1,0 +1,6 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {readSession,sessionCookie} from '../lib/email-auth/security.ts';
+import {isAllowedAuthPost} from '../lib/email-auth/http.ts';
+test('auth POST requires same origin and JSON, rejects missing origin and oversized body',()=>{const make=(headers:Record<string,string>)=>new Request('https://food.example/api/auth/login',{method:'POST',headers});assert.equal(isAllowedAuthPost(make({origin:'https://food.example','content-type':'application/json'})),true);for(const h of [{'content-type':'application/json'},{origin:'https://evil.example','content-type':'application/json'},{origin:'https://food.example','content-type':'text/plain'},{origin:'https://food.example','content-type':'application/json','content-length':'9000'}])assert.equal(isAllowedAuthPost(make(h as Record<string,string>)),false);});
+test('cookie is HttpOnly, same-site and secure; ambiguous or malformed tokens are ignored',()=>{const token='a'.repeat(64);assert.equal(readSession(sessionCookie(token)),token);assert.match(sessionCookie(token),/HttpOnly/);assert.match(sessionCookie(token),/Secure/);assert.match(sessionCookie(token),/SameSite=Lax/);assert.equal(readSession('shiguang_session=bad'),null);assert.equal(readSession(`shiguang_session=${token}; shiguang_session=${token}`),null);});
