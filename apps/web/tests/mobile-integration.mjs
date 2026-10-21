@@ -7,7 +7,7 @@ const verifier=randomBytes(32).toString('hex'),challenge=createHash('sha256').up
 function ok(value,label){assert.ok(value,label);checks++;console.log('PASS '+label);}
 async function json(path,body,extra={}){const r=await fetch(base+path,{method:body?'POST':'GET',headers:{'content-type':'application/json',...extra},body:body?JSON.stringify(body):undefined});return {status:r.status,headers:r.headers,data:await r.json()};}
 async function issue(){const r=await json('/api/mobile/authorize',{challenge,state,redirect_uri:'shiguang://auth'},headers);assert.equal(r.status,200);return new URL(r.data.redirect).searchParams.get('code');}
-function expire(table,column,secret){const hash=createHash('sha256').update(secret).digest('hex');execFileSync(process.execPath,['--import','./scripts/sites-env.mjs','./node_modules/wrangler/bin/wrangler.js','d1','execute','DB','--local','--persist-to','.wrangler/state','--command',`UPDATE ${table} SET expiresAt=0 WHERE ${column}='${hash}'`],{stdio:'pipe'});}
+function expire(table,column,secret){const hash=createHash('sha256').update(secret).digest('hex');execFileSync(process.execPath,['--import','./scripts/sites-env.mjs','./scripts/tool-cli.mjs','wrangler','d1','execute','DB','--local','--config','../../wrangler.jsonc','--persist-to','../../.wrangler/state','--command',`UPDATE ${table} SET expiresAt=0 WHERE ${column}='${hash}'`],{stdio:'pipe'});}
 const params={challenge,state,redirect_uri:'shiguang://auth'};
 ok((await json('/api/mobile/authorize',params,{origin:base})).status===401,'authorization requires browser identity');
 ok((await json('/api/mobile/authorize',params,{...headers,origin:'https://evil.example'})).status===403,'cross-origin authorization rejected');

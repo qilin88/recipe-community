@@ -1,0 +1,9 @@
+import expo from "eslint-config-expo/flat.js";
+export default [
+  ...expo,
+  { ignores: ["dist/**", ".expo/**"] },
+  {
+    files: ["tests/**/*.ts"],
+    languageOptions: { globals: { process: "readonly" } },
+  },
+];

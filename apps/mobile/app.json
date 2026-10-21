@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "食光",
+    "slug": "shiguang-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shiguang.recipe",
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#D46C46",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "com.shiguang.recipe"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "允许食光选择照片，用于分享你的美食作品和食谱。",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
+      "expo-build-properties",
+      "expo-font"
+    ],
+    "scheme": "shiguang"
+  }
+}

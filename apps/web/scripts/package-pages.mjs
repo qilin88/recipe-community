@@ -1,6 +1,6 @@
 import {cp,mkdir,rm,writeFile} from 'node:fs/promises';
 import path from 'node:path';
-const root=process.cwd(),output=path.join(root,'dist/pages');
+const root=process.cwd(),output=path.resolve(root,'../../dist/pages');
 await rm(output,{recursive:true,force:true});await mkdir(output,{recursive:true});
 await cp(path.join(root,'dist/client'),output,{recursive:true});
 // Pages advanced-mode directory keeps every server module private. Never copy
@@ -13,4 +13,5 @@ await writeFile(path.join(output,'_routes.json'),JSON.stringify({version:1,inclu
 await writeFile(path.join(output,'_headers'),`/*\n  Referrer-Policy: no-referrer\n  X-Content-Type-Options: nosniff\n`);
 // The Vite Worker build emits a redirect that Pages must not follow.
 await rm(path.join(root,'.wrangler/deploy/config.json'),{force:true});
+await rm(path.resolve(root,'../../.wrangler/deploy/config.json'),{force:true});
 console.log('Cloudflare Pages package: dist/pages (advanced-mode Worker + assets)');

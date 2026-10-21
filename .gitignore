@@ -48,3 +48,14 @@ yarn-error.log*
 /test-results/
 /docs/qa-email-auth/
 /docs/browser-test-*/
+
+# Monorepo application state
+**/node_modules/
+**/dist/
+**/.next/
+**/.wrangler/
+**/.sites-runtime/
+**/coverage/
+.superpowers/
+!.env.example
+!**/.env.example
